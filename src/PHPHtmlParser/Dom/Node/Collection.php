@@ -9,6 +9,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use PHPHtmlParser\Exceptions\EmptyCollectionException;
+use ReturnTypeWillChange;
 
 /**
  * Class Collection.
@@ -26,9 +27,9 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable
      * Attempts to call the method on the first node in
      * the collection.
      *
-     * @throws EmptyCollectionException
-     *
      * @return mixed
+     *
+     * @throws EmptyCollectionException
      */
     public function __call(string $method, array $arguments)
     {
@@ -36,6 +37,7 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable
         if ($node instanceof AbstractNode) {
             return \call_user_func_array([$node, $method], $arguments);
         }
+
         throw new EmptyCollectionException('The collection does not contain any Nodes.');
     }
 
@@ -45,16 +47,17 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable
      *
      * @param mixed $key
      *
-     * @throws EmptyCollectionException
-     *
      * @return mixed
+     *
+     * @throws EmptyCollectionException
      */
     public function __get($key)
     {
         $node = \reset($this->collection);
         if ($node instanceof AbstractNode) {
-            return $node->$key;
+            return $node->{$key};
         }
+
         throw new EmptyCollectionException('The collection does not contain any Nodes.');
     }
 
@@ -130,6 +133,7 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable
      *
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->collection[$offset] ?? null;
